@@ -1,6 +1,8 @@
 package sujin.dev.hellowas.domain.entity.service;
 
+import ch.qos.logback.classic.Logger;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sujin.dev.hellowas.domain.entity.Person;
@@ -54,17 +56,27 @@ public interface PersonService {
 
         @Override
         public void personAdd(Person person) {
-
+            personRepository.save(person);
         }
 
         @Override
         public void personEdit(Long id, Person person) {
+            // id에 해당하는 Person 엔티티를 조회
+            Person existingPerson = personRepository.findById(id)
+                    .orElseThrow(() -> new EntityNotFoundException("Person not found with id: " + id));
 
+            // Perosn 필드를 업데이트합니다.
+            existingPerson.setName(person.getName());
+            existingPerson.setAge(person.getAge());
+            existingPerson.setAddress(person.getAddress());
+
+            // 업데이트된 엔티티를 저장합니다.
+            personRepository.save(existingPerson);
         }
 
         @Override
         public void personDelete(Long id) {
-
+            personRepository.deleteById(id);
         }
     }
 
