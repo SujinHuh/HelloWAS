@@ -14,6 +14,7 @@ import java.util.List;
 public interface PersonService {
 
     List<Person> personsList();
+
     Person getPerson(Long id);
 
     void personAdd(Person person);
@@ -24,21 +25,21 @@ public interface PersonService {
 
     @Service
     @RequiredArgsConstructor
-    class PersonServiceImpl implements PersonService{
+    class PersonServiceImpl implements PersonService {
         private final PersonRepository personRepository;
 
         @PostConstruct
         public void init() {
-            for (int i = 0; i < 10; i++){
+            for (int i = 0; i < 10; i++) {
                 PersonRole personRole = PersonRole.USER;
-                if(i % 2 == 0){
+                if (i % 2 == 0) {
                     personRole = PersonRole.USER;
-                } else if(i % 3 == 1){
+                } else if (i % 3 == 1) {
                     personRole = PersonRole.GUEST;
-                }else {
+                } else {
                     personRole = PersonRole.ADMIN;
                 }
-                personRepository.save(Person.createPerson("name","address"+i, 13*i,personRole));
+                personRepository.save(Person.createPerson("name", "address" + i, 13 * i, personRole));
 
             }
 
@@ -51,7 +52,8 @@ public interface PersonService {
 
         @Override
         public Person getPerson(Long id) {
-            return null;
+            return personRepository.findById(id)
+                    .orElse(null); // ID에 해당하는 Person 엔티티를 찾지 못하면 null을 반환합니다.
         }
 
         @Override
@@ -61,6 +63,7 @@ public interface PersonService {
 
         @Override
         public void personEdit(Long id, Person person) {
+
             // id에 해당하는 Person 엔티티를 조회
             Person existingPerson = personRepository.findById(id)
                     .orElseThrow(() -> new EntityNotFoundException("Person not found with id: " + id));

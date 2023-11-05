@@ -1,5 +1,6 @@
 package sujin.dev.hellowas.domain.entity.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -12,6 +13,7 @@ import sujin.dev.hellowas.domain.entity.PersonRole;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Slf4j
 class PersonServiceTest {
 
 
@@ -19,7 +21,7 @@ class PersonServiceTest {
     @Autowired
     private PersonService personService;
 
-    @BeforeEach
+    @BeforeEach //공통적으로 필요한 초기화 작업
     void setUp() {
         for (int i = 0; i < 10; i++){
             PersonRole personRole = PersonRole.USER;
@@ -30,8 +32,13 @@ class PersonServiceTest {
             }else {
                 personRole = PersonRole.ADMIN;
             }
-            personService.personAdd(Person.createPerson("name","address"+i, 13*i,personRole));
+            Person person = Person.createPerson("name","address"+i, 13*i,personRole);
 
+            // 로그를 출력
+            log.info("로그 출력 >>> ");
+            log.info("Adding person: {}", person);
+
+            personService.personAdd(person);
         }
     }
 
@@ -54,7 +61,8 @@ class PersonServiceTest {
     @DisplayName("회원 추가")
     @Order(3)
     void personAdd() {
-        personService.personAdd(null);
+        setUp();
+//        personService.personAdd(null);
     }
 
 
@@ -62,7 +70,14 @@ class PersonServiceTest {
     @DisplayName("회원 수정")
     @Order(4)
     void personEdit(){
-        personService.personEdit(1L, null);
+        // 업데이트할 Person 객체 생성
+        Person updatedPerson = new Person();
+        updatedPerson.setName("Updated Name");
+        updatedPerson.setAge(30);
+        // 주소 설정 (Address 객체를 생성하고 설정해야 함)
+
+        // personEdit 메서드 호출
+        personService.personEdit(updatedPerson.getId(), updatedPerson);
     }
 
     @Test
