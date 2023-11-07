@@ -16,7 +16,7 @@ public class Person extends BaseEntity{
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true) // 유니크 키
+    @Column(name = "name", nullable = false) // 유니크 키
     private String name;
 
     private String address;
