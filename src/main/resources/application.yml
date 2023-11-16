@@ -3,7 +3,12 @@ server:
 
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb
+#    인메모리
+#    url: jdbc:h2:mem:testdb
+#    서버모드
+    url: jdbc:h2:tcp://localhost/~/testDB
+#    파일 모드
+#    url: jdbc:h2:~/testDB
     username: sa
     password:
 
