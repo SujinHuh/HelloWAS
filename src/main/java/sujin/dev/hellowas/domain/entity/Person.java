@@ -11,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"name", "address"}))
 public class Person extends BaseEntity{
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,6 +29,7 @@ public class Person extends BaseEntity{
 
     private String password;
 
+
     @Enumerated(EnumType.STRING)
     private PersonRole role;
     public void setId(Long id) {
@@ -37,6 +39,7 @@ public class Person extends BaseEntity{
     public boolean isAdult(){
         return age>= 20;
     }
+
 
     private Person(String name, String address, int age, PersonRole role) {
         this.name = name;
