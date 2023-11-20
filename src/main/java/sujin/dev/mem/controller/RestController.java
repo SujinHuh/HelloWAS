@@ -2,11 +2,14 @@ package sujin.dev.mem.controller;
 
 import lombok.RequiredArgsConstructor;
 import sujin.dev.mem.domain.entity.CartEntity;
+import sujin.dev.mem.domain.entity.GoodsEntity;
 import sujin.dev.mem.domain.entity.MemberEntity;
 import sujin.dev.mem.domain.model.CartDTO;
+import sujin.dev.mem.domain.model.GoodsDTO;
 import sujin.dev.mem.domain.model.MemberDTO;
 import sujin.dev.mem.domain.model.ResponseResult;
 import sujin.dev.mem.domain.service.CartService;
+import sujin.dev.mem.domain.service.GoodsService;
 import sujin.dev.mem.domain.service.MemberService;
 
 import java.util.List;
@@ -18,7 +21,12 @@ public class RestController {
 
     private final MemberService service;
     private final CartService cartService;
+    private final GoodsService goodsService;
 
+    private void registerGoods(GoodsDTO goods) {
+        //goods
+
+    }
 
     private void registerCart(CartDTO cart) {
 
