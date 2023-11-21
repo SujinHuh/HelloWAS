@@ -4,9 +4,10 @@ import jakarta.persistence.Entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import sujin.dev.mem.domain.model.MemberDTO;
 
-@Getter @Setter @Builder
+@Getter @Setter @ToString @Builder
 public class MemberEntity {
 
     private long id;

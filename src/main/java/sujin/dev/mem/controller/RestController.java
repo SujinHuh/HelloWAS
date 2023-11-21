@@ -2,7 +2,6 @@ package sujin.dev.mem.controller;
 
 import lombok.RequiredArgsConstructor;
 import sujin.dev.mem.domain.entity.CartEntity;
-import sujin.dev.mem.domain.entity.GoodsEntity;
 import sujin.dev.mem.domain.entity.MemberEntity;
 import sujin.dev.mem.domain.model.CartDTO;
 import sujin.dev.mem.domain.model.GoodsDTO;
@@ -17,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RestController {
 
-    private final MemberService service;
+    private final MemberService memberService;
     private final CartService cartService;
     private final GoodsService goodsService;
 
@@ -39,6 +38,20 @@ public class RestController {
 
     }
 
+    // 회원목록
+    public List<MemberDTO> getmemberList(){
+
+        List<MemberDTO> members = memberService.getMembers();
+
+        if(members == null) {
+            throw new IllegalArgumentException("회원 목록이 없습니다.");
+        }
+        System.out.println("=== 회원목록 === ");
+        for (MemberDTO member : members) {
+            System.out.println("Name: " + member.getName() + ", Phone: " + member.getPhone());
+        }
+        return members;
+    }
 
     public void registerMember(MemberDTO member) {
         // validation
@@ -46,7 +59,7 @@ public class RestController {
             throw new IllegalArgumentException("이름은 20자를 초과할 수 없습니다.");
         }
         MemberEntity entity = MemberEntity.toEntity(member);
-        service.registerMember(entity);
+        memberService.registerMember(entity);
 
         System.out.println();
         System.out.println("===== 회원 가입 완료 =====");
@@ -66,7 +79,7 @@ public class RestController {
         }
 
         return new ResponseResult<>
-                (200, "success", service.getMembers());
+                (200, "success", memberService.getMembers());
 
 
     }

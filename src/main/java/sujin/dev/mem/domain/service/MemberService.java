@@ -6,7 +6,6 @@ import sujin.dev.mem.domain.model.MemberDTO;
 import sujin.dev.mem.infra.repo.DataRepository;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 public interface MemberService {
     void registerMember(MemberEntity member);
