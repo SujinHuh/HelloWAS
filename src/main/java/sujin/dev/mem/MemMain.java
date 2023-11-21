@@ -11,6 +11,7 @@ import sujin.dev.mem.infra.repo.impl.GoodsRepository;
 import sujin.dev.mem.infra.repo.impl.MemRepository;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 
 @Slf4j
 public class MemMain {
@@ -31,15 +32,57 @@ public class MemMain {
 
         // MemberDTO 생성
         // - MemberDTO.builder()를 통해 빌더 패턴 활용
-        MemberDTO memberDTO = MemberDTO.builder()
-                .name("dssdfs")
-                .phone("123123").build();
+//        MemberDTO memberDTO = MemberDTO.builder()
+//                .name("수진_94")
+//                .phone("123123").build();
 
-        // RestController의 registerMember 메서드 호출
-        // - 주어진 MemberDTO를 사용하여 새로운 회원 등록을 시도
-        restController.registerMember(memberDTO);
 
-        log.info(memberDTO.toString());
-        // 프로그램이 종료됨
+        // Scanner 객체 생성
+        Scanner scanner = new Scanner(System.in);
+        boolean isProgramRunning = true;
+
+        while (isProgramRunning) {
+            System.out.println();
+            System.out.println("=== CLI 프로그램 ===");
+            System.out.println("1. 회원 가입");
+            System.out.println("2. 기타 기능 (미구현)");
+            System.out.println("3. 프로그램 종료");
+
+            System.out.print("원하는 기능을 선택하세요 (1, 2, 또는 3): ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Enter 키를 소진하기 위한 추가 코드
+
+            switch (choice) {
+                case 1:
+                    // 회원 가입
+                    System.out.print("이름을 입력하세요: ");
+                    String name = scanner.nextLine();
+
+                    System.out.print("전화번호를 입력하세요: ");
+                    String phone = scanner.nextLine();
+
+                    MemberDTO memberDTO = MemberDTO.builder()
+                            .name(name)
+                            .phone(phone)
+                            .build();
+
+                    restController.registerMember(memberDTO);
+                    System.out.println();
+                    System.out.println("회원가입이 완료되었습니다.");
+                    break;
+                case 2:
+                    System.out.println("기타 기능은 아직 구현되지 않았습니다.");
+                    break;
+                case 3:
+                    System.out.println("프로그램을 종료합니다.");
+                    isProgramRunning = false;
+                    break;
+                default:
+                    System.out.println("잘못된 선택입니다. 다시 선택하세요.");
+            }
+        }
+
+        scanner.close();
+        System.out.println("====== 프로그램이 종료됩니다. ======");
     }
 }

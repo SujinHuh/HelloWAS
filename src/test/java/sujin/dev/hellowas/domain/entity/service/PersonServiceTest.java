@@ -127,7 +127,7 @@ class PersonServiceTest {
     void personDelete(){
         Long id = 1L;
         personService.personDelete(id);
-        log.info("id가 삭제 되었습니다. : {}",id);
+        //log.info("id가 삭제 되었습니다. : {}",id);
     }
 
 }
