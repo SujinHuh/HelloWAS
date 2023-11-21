@@ -14,8 +14,6 @@ import sujin.dev.mem.domain.service.MemberService;
 
 import java.util.List;
 
-import static sujin.dev.mem.domain.model.ResponseResult.builder;
-
 @RequiredArgsConstructor
 public class RestController {
 
@@ -50,7 +48,9 @@ public class RestController {
         MemberEntity entity = MemberEntity.toEntity(member);
         service.registerMember(entity);
 
-        System.out.println(String.format("회원 가입 완료 %s", member.getName()));
+        System.out.println();
+        System.out.println("===== 회원 가입 완료 =====");
+        System.out.println(String.format("%s님 회원가입을 축하합니다.", member.getName()));
     }
 
     public ResponseResult<List<MemberDTO>> getMember(MemberDTO memberDTO) {

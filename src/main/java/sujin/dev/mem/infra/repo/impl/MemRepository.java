@@ -15,7 +15,10 @@ public class MemRepository implements DataRepository<MemberEntity> {
     // id를 사용하여 특정 회원을 찾아 반환하는 메서드
     @Override
     public MemberEntity findById(long id) {
-        return members.stream().filter(m -> m.getId() == id).findFirst().orElseThrow();
+        return members.stream()
+                .filter(m -> m.getId() == id)
+                .findFirst()
+                .orElse(null); // 또는 Optional.empty()를 사용하려면
     }
 
     // 현재 저장된 모든 회원 목록을 반환하는 메서드

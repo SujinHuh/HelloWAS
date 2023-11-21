@@ -8,15 +8,17 @@ import sujin.dev.mem.domain.model.MemberDTO;
 
 @Getter @Setter @Builder
 public class MemberEntity {
+
     private long id;
+
     private String name;
+
     private String phone;
 
-    public static MemberEntity of(MemberEntityBuilder memberEntityBuilder) {
-        return memberEntityBuilder.build();
-    }
-
     public static MemberEntity toEntity(MemberDTO member) {
-        return of(MemberEntity.builder().name(member.getName()));
+        return MemberEntity.builder()
+                .name(member.getName())
+                .phone(member.getPhone())
+                .build();
     }
 }

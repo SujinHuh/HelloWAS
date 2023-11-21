@@ -13,7 +13,10 @@ public class GoodsRepository implements DataRepository<GoodsEntity> {
     private final List<GoodsEntity> goods;
     @Override
     public GoodsEntity findById(long id) {
-        return goods.stream().filter( g-> g.getId() == id).findFirst().orElseThrow();
+        return goods.stream()
+                .filter( g-> g.getId() == id)
+                .findFirst()
+                .orElse(null);
     }
 
     @Override

@@ -13,7 +13,10 @@ public class CartRepository implements DataRepository<CartEntity> {
 
     @Override
     public CartEntity findById(long id) {
-        return carts.stream().filter(c -> c.getId() == id).findFirst().orElseThrow();
+        return carts.stream()
+                .filter(c -> c.getId() == id)
+                .findFirst()
+                .orElse(null);
     }
 
     @Override

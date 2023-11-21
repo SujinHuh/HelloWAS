@@ -16,11 +16,11 @@ public class CartEntity {
 
     private OrdersEntity orders;
 
-    public static CartEntity of(CartEntityBuilder cartEntityBuilder) {
-        return cartEntityBuilder.build();
-    }
-
     public static CartEntity toEntity(CartDTO cart) {
-        return of(CartEntity.builder().goods(cart.getGoods()));
+        return CartEntity.builder()
+                .member(cart.getMember())
+                .goods(cart.getGoods())
+                .orders(cart.getOrders())
+                .build();
     }
 }
