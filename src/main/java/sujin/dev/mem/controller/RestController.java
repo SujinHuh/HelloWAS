@@ -2,6 +2,7 @@ package sujin.dev.mem.controller;
 
 import lombok.RequiredArgsConstructor;
 import sujin.dev.mem.domain.entity.CartEntity;
+import sujin.dev.mem.domain.entity.GoodsEntity;
 import sujin.dev.mem.domain.entity.MemberEntity;
 import sujin.dev.mem.domain.model.CartDTO;
 import sujin.dev.mem.domain.model.GoodsDTO;
@@ -20,12 +21,16 @@ public class RestController {
     private final CartService cartService;
     private final GoodsService goodsService;
 
-    private void registerGoods(GoodsDTO goods) {
+    public void registerGoods(GoodsDTO goods) {
         //goods
-
+        GoodsEntity goodsEntity = GoodsEntity.toEntity(goods);
+        goodsService.registerGoods(goodsEntity);
+        System.out.println();
+        System.out.println("======= 상품 등록 완료 =======");
+        System.out.println(String.format("%s 상품 등록 완료되었습니다.",goods.getName()));
     }
 
-    private void registerCart(CartDTO cart) {
+    public void registerCart(CartDTO cart) {
 
         // cart
         if(cart.getGoods() == null) {

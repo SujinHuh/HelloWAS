@@ -2,7 +2,6 @@ package sujin.dev.mem;
 
 import lombok.extern.slf4j.Slf4j;
 import sujin.dev.mem.controller.RestController;
-import sujin.dev.mem.domain.model.CurrentValueDTO;
 import sujin.dev.mem.domain.model.GoodsDTO;
 import sujin.dev.mem.domain.model.MemberDTO;
 import sujin.dev.mem.domain.service.CartService;
@@ -14,6 +13,7 @@ import sujin.dev.mem.infra.repo.impl.MemRepository;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.Scanner;
 
 @Slf4j
@@ -49,7 +49,7 @@ public class MemMain {
             System.out.println("=== CLI 프로그램 ===");
             System.out.println("1. 회원 가입");
             System.out.println("2. 회원 목록 조회");
-            System.out.println("3. 프로그램 종료");
+            System.out.println("3. 상품 등록");
 
             System.out.print("원하는 기능을 선택하세요 (1, 2, 또는 3): ");
             int choice = scanner.nextInt();
@@ -80,32 +80,31 @@ public class MemMain {
                     restController.getmemberList();
 
                     break;
-//                case 3:
-//                    System.out.println("상품 등록");
-//                    System.out.print("상품 이름을 입력하세요: ");
-//                    String goodsName = scanner.nextLine();
-//
-//                    System.out.print("상품 가격을 입력하세요: ");
-//                    BigDecimal goodsAmount = scanner.nextBigDecimal();
-//                    scanner.nextLine(); // Enter 키 소진
-//
-//                    System.out.print("상품 재고 수량을 입력하세요: ");
-//                    int stockQuantity = scanner.nextInt();
-//                    scanner.nextLine(); // Enter 키 소진
-//
-//                    GoodsDTO goodsDTO = GoodsDTO.builder()
-//                            .name(goodsName)
-//                            .currentValue(CurrentValueDTO.builder()
-//                                    .amount(goodsAmount)
-//                                    .currency(Currency.KRW)
-//                                    .build())
-//                            .stockQuantity(stockQuantity)
-//                            .build();
-//
-//                    restController.registerGoods(goodsDTO);
-//                    System.out.println();
-//                    System.out.println("상품 등록이 완료되었습니다.");
-//                    break;
+                case 3:
+                    System.out.print("상품 이름을 입력하세요: ");
+                    String goodsName = scanner.nextLine();
+
+                    System.out.print("상품 가격을 입력하세요: ");
+                    BigDecimal goodsAmount = scanner.nextBigDecimal();
+                    scanner.nextLine(); // Enter 키 소진
+
+                    System.out.print("상품 재고 수량을 입력하세요: ");
+                    int stockQuantity = scanner.nextInt();
+                    scanner.nextLine(); // Enter 키 소진
+
+                    GoodsDTO goodsDTO = GoodsDTO.builder()
+                            .name(goodsName)
+                            .currentValue(GoodsDTO.CurrentValueEntity.builder()
+                                    .amount(goodsAmount)
+                                    .currency(Currency.getInstance("KRW"))
+                                    .build())
+                            .stockQuantity(stockQuantity)
+                            .build();
+
+                    restController.registerGoods(goodsDTO);
+                    System.out.println();
+                    System.out.println("상품 등록이 완료되었습니다.");
+                    break;
 
                 default:
                     System.out.println("잘못된 선택입니다. 다시 선택하세요.");

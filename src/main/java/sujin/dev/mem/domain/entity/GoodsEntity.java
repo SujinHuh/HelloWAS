@@ -12,7 +12,7 @@ public class GoodsEntity {
 
     private String name;
 
-    private CurrentValueEntity currentValue;
+    private GoodsDTO.CurrentValueEntity currentValue;
 
     private int stockQuantity;
 

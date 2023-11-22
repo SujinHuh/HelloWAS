@@ -17,12 +17,17 @@ public interface GoodsService {
         private final DataRepository<GoodsEntity> repository;
 
         public void registerGoods(GoodsEntity goods) {
-            try{
-                GoodsEntity byId = this.repository.findById(goods.getId());
-                if(byId == null) {
+            try {
+                if (goods.getId() != null) {
+                    GoodsEntity byId = this.repository.findById(goods.getId());
+                    if (byId == null) {
+                        this.repository.insert(goods);
+                    }
+                    this.repository.update(goods);
+                } else {
+                    // id가 null인 경우에 대한 처리
                     this.repository.insert(goods);
                 }
-                this.repository.update(goods);
             } catch (RuntimeException re) {
                 re.printStackTrace();
             }
