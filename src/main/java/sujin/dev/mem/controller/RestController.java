@@ -92,4 +92,7 @@ public class RestController {
     private static boolean isNameLength(MemberDTO member) {
         return member.getName().length() > 20;
     }
+
+    public void getGoodsList() {
+    }
 }

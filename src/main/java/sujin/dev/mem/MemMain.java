@@ -105,6 +105,14 @@ public class MemMain {
                     System.out.println();
                     System.out.println("상품 등록이 완료되었습니다.");
                     break;
+                case 4:
+                    System.out.println("상품 목록 조회");
+                    System.out.println();
+
+                    restController.getGoodsList();
+
+                    break;
+
 
                 default:
                     System.out.println("잘못된 선택입니다. 다시 선택하세요.");

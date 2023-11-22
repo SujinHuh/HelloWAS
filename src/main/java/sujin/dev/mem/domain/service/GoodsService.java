@@ -6,6 +6,7 @@ import sujin.dev.mem.domain.model.GoodsDTO;
 import sujin.dev.mem.infra.repo.DataRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface GoodsService {
     void registerGoods(GoodsEntity goods);
@@ -18,16 +19,15 @@ public interface GoodsService {
 
         public void registerGoods(GoodsEntity goods) {
             try {
-                if (goods.getId() != null) {
-                    GoodsEntity byId = this.repository.findById(goods.getId());
-                    if (byId == null) {
-                        this.repository.insert(goods);
-                    }
-                    this.repository.update(goods);
-                } else {
-                    // id가 null인 경우에 대한 처리
+                Long goodsId = goods.getId();
+
+                Optional<GoodsEntity> optionalGoods = goodsId != null ? Optional.ofNullable(this.repository.findById(goodsId)) : Optional.empty();
+
+                optionalGoods.or(() -> {
                     this.repository.insert(goods);
-                }
+                    return Optional.empty();
+                }).ifPresent(existingGoods -> this.repository.update(goods));
+
             } catch (RuntimeException re) {
                 re.printStackTrace();
             }
