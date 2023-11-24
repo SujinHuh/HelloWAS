@@ -50,6 +50,7 @@ public class MemMain {
             System.out.println("1. 회원 가입");
             System.out.println("2. 회원 목록 조회");
             System.out.println("3. 상품 등록");
+            System.out.println("4. 상품 조회");
 
             System.out.print("원하는 기능을 선택하세요 (1, 2, 또는 3): ");
             int choice = scanner.nextInt();

@@ -34,13 +34,20 @@ public interface GoodsService {
         }
         @Override
         public List<GoodsDTO> getGoods() {
-            return this.repository.findAll().stream().map(m ->{
-                GoodsDTO goodsDTO = new GoodsDTO();
-                goodsDTO.setName(m.getName());
-                goodsDTO.setCurrentValue(m.getCurrentValue());
-                goodsDTO.setStockQuantity(m.getStockQuantity());
-                return goodsDTO;
-            }).toList();
+            return this.repository.findAll().stream()
+                    .map(this::convertToDTO)
+                    .toList();
+        }
+
+        private GoodsDTO convertToDTO(GoodsEntity goodsEntity) {
+            return GoodsDTO.builder()
+                    .name(goodsEntity.getName())
+                    .currentValue(GoodsDTO.CurrentValueEntity.builder()
+                            .amount(goodsEntity.getCurrentValue().getAmount())
+                            .currency(goodsEntity.getCurrentValue().getCurrency())
+                            .build())
+                    .stockQuantity(goodsEntity.getStockQuantity())
+                    .build();
         }
     }
 }
