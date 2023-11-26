@@ -11,6 +11,7 @@ public interface MemberService {
     void registerMember(MemberEntity member);
 
     List<MemberDTO> getMembers();
+    MemberDTO mapToDTO(MemberEntity member);
     @RequiredArgsConstructor
     class MemberServiceImpl implements MemberService {
         private final DataRepository<MemberEntity> repository;
@@ -35,6 +36,25 @@ public interface MemberService {
                 memberDTO.setPhone(m.getPhone());
                 return memberDTO;
             }).toList();
+        }
+
+        @Override
+        public MemberDTO mapToDTO(MemberEntity member) {
+            if (member == null) {
+                return null;
+            }
+
+            return MemberDTO.builder()
+                    .name(member.getName())
+                    .phone(member.getPhone())
+                    .build();
+        }
+
+        private MemberDTO convertToDTO(MemberEntity memberEntity){
+            return MemberDTO.builder()
+                    .name(memberEntity.getName())
+                    .phone(memberEntity.getPhone())
+                    .build();
         }
     }
 }

@@ -33,18 +33,6 @@ public class RestController {
         System.out.println(String.format("%s 상품 등록 완료되었습니다.", goods.getName()));
     }
 
-    public void registerCart(CartDTO cart) {
-
-        // cart
-        if (cart.getGoods() == null) {
-            throw new IllegalArgumentException("장바구니가 비어있습니다.");
-        }
-        CartEntity entity = CartEntity.toEntity(cart);
-        cartService.registerCart(entity);
-
-        System.out.println(String.format("장바구니에 물건이 담겼습니다.%s", cart.getGoods()));
-
-    }
 
     // 회원목록
     public List<MemberDTO> getmemberList() {
@@ -60,6 +48,29 @@ public class RestController {
         }
         return members;
     }
+
+    public List<GoodsDTO> getGoodsList() {
+        List<GoodsDTO> goodsList = goodsService.getGoods();
+
+        if (goodsList == null || goodsList.isEmpty()) {
+            System.out.println("상품 목록이 없습니다.");
+            return Collections.emptyList();
+        }
+
+        System.out.println("=== 상품목록 === ");
+
+        for (GoodsDTO goods : goodsList) {
+            BigDecimal amount = goods.getCurrentValue().getAmount();
+            Currency currency = goods.getCurrentValue().getCurrency();
+
+            System.out.println("상품명: " + goods.getName() +
+                    ", 상품 가격: " + (amount != null ? amount + " " + currency : "가격 정보 없음") +
+                    ", 상품 개수:" + goods.getStockQuantity());
+        }
+
+        return goodsList;
+    }
+
 
     public void registerMember(MemberDTO member) {
         // validation
@@ -95,24 +106,26 @@ public class RestController {
         return member.getName().length() > 20;
     }
 
-    public List<GoodsDTO> getGoodsList() {
-        List<GoodsDTO> goodsList = goodsService.getGoods();
 
-        if (goodsList != null && !goodsList.isEmpty()) {
-            System.out.println("=== 상품목록 === ");
+    public void getCartList() {
+        List<CartDTO> cartList = cartService.getCartList();
 
-            for (GoodsDTO goods : goodsList) {
-                BigDecimal amount = goods.getCurrentValue().getAmount();
-                Currency currency = goods.getCurrentValue().getCurrency();
+        if (cartList != null && !cartList.isEmpty()) {
+            System.out.println("=== 장바구니 목록 === ");
+
+            for (CartDTO cart : cartList) {
+                GoodsEntity goods = cart.getGoods();
+                MemberEntity member = cart.getMember();
 
                 System.out.println("상품명: " + goods.getName() +
-                        ", 상품 가격: " + (amount != null ? amount + " " + currency : "가격 정보 없음") +
-                        ", 상품 개수:" + goods.getStockQuantity());
+                        ", 상품 가격: " + goods.getCurrentValue().getAmount() + " " + goods.getCurrentValue().getCurrency() +
+                        ", 상품 개수: " + goods.getStockQuantity() +
+                        ", 회원명: " + member.getName() +
+                        ", 전화번호: " + member.getPhone());
             }
         } else {
-            System.out.println("상품 목록이 없습니다.");
+            System.out.println("장바구니에 상품이 없습니다.");
         }
-
-        return goodsList != null ? goodsList : Collections.emptyList();
     }
+
 }

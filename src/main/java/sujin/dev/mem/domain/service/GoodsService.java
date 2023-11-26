@@ -12,7 +12,7 @@ public interface GoodsService {
     void registerGoods(GoodsEntity goods);
 
     List<GoodsDTO> getGoods();
-
+    GoodsDTO mapToDTO(GoodsEntity goods);
     @RequiredArgsConstructor // 생성자 자동생성
     class GoodsServiceImpl implements GoodsService {
         private final DataRepository<GoodsEntity> repository;
@@ -32,6 +32,23 @@ public interface GoodsService {
                 re.printStackTrace();
             }
         }
+
+        @Override
+        public GoodsDTO mapToDTO(GoodsEntity goods) {
+            if (goods == null) {
+                return null;
+            }
+
+            return GoodsDTO.builder()
+                    .name(goods.getName())
+                    .currentValue(GoodsDTO.CurrentValueEntity.builder()
+                            .amount(goods.getCurrentValue().getAmount())
+                            .currency(goods.getCurrentValue().getCurrency())
+                            .build())
+                    .stockQuantity(goods.getStockQuantity())
+                    .build();
+        }
+
         @Override
         public List<GoodsDTO> getGoods() {
             return this.repository.findAll().stream()
@@ -39,7 +56,11 @@ public interface GoodsService {
                     .toList();
         }
 
+
         private GoodsDTO convertToDTO(GoodsEntity goodsEntity) {
+                if (goodsEntity == null) {
+                    return null;
+                }
             return GoodsDTO.builder()
                     .name(goodsEntity.getName())
                     .currentValue(GoodsDTO.CurrentValueEntity.builder()
@@ -49,5 +70,6 @@ public interface GoodsService {
                     .stockQuantity(goodsEntity.getStockQuantity())
                     .build();
         }
+
     }
 }

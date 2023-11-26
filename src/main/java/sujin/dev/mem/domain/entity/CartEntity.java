@@ -23,4 +23,13 @@ public class CartEntity {
                 .orders(cart.getOrders())
                 .build();
     }
+    // CartEntity 클래스에 다음 메서드를 추가합니다.
+    public GoodsEntity getGoods() {
+        return this.goods;
+    }
+
+    public MemberEntity getMember() {
+        return this.member;
+    }
+
 }
