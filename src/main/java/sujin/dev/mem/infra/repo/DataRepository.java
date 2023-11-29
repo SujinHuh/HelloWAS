@@ -12,4 +12,6 @@ public interface DataRepository<T> {
 
     void insert(T t);
 
+    T findByMemberName(String memberName);
+
 }

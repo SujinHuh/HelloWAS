@@ -2,8 +2,11 @@ package sujin.dev.mem;
 
 import lombok.extern.slf4j.Slf4j;
 import sujin.dev.mem.controller.RestController;
+import sujin.dev.mem.domain.entity.GoodsEntity;
+import sujin.dev.mem.domain.entity.MemberEntity;
 import sujin.dev.mem.domain.model.GoodsDTO;
 import sujin.dev.mem.domain.model.MemberDTO;
+import sujin.dev.mem.domain.model.OrderDTO;
 import sujin.dev.mem.domain.service.CartService;
 import sujin.dev.mem.domain.service.GoodsService;
 import sujin.dev.mem.domain.service.MemberService;
@@ -14,6 +17,7 @@ import sujin.dev.mem.infra.repo.impl.MemRepository;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
+import java.util.List;
 import java.util.Scanner;
 
 @Slf4j
@@ -53,6 +57,7 @@ public class MemMain {
             System.out.println("3. 상품 등록");
             System.out.println("4. 상품 조회");
             System.out.println("5. 장바구니");
+            System.out.println("6. 주문하기");
 
             System.out.print("원하는 기능을 선택하세요 (1, 2, 또는 3): ");
             int choice = scanner.nextInt();
@@ -120,36 +125,39 @@ public class MemMain {
 
                     restController.getCartList();
 
-//                case 6:
-//                    System.out.println("주문하기");
-//                    System.out.println();
-//
-//                    // 주문과 관련된 정보 입력 받기
-//                    // 예시로 주문은 회원과 상품 목록으로 이루어진다고 가정
-//                    System.out.print("회원 이름을 입력하세요: ");
-//                    String memberName = scanner.nextLine();
-//
-//                    // 회원 정보 가져오기
-//                    MemberDTO member = restController.findMemberByName(memberName);
-//
-//                    if (member != null) {
-//                        // 상품 목록 가져오기
-//                        List<GoodsDTO> goodsList = restController.getGoodsList();
-//
-//                        // 주문 정보 생성
-//                        OrderDTO orderDTO = OrderDTO.builder()
-//                                .member(member)
-//                                .goodsList(goodsList)
-//                                // 기타 주문과 관련된 정보 추가
-//                                .build();
-//
-//                        // 주문 서비스 호출
-//                        restController.placeOrder(orderDTO);
-//
-//                        System.out.println("주문이 완료되었습니다.");
-//                    } else {
-//                        System.out.println("해당하는 회원이 없습니다.");
-//                    }
+                case 6:
+                    System.out.println("주문하기");
+                    System.out.println();
+
+                    // 주문과 관련된 정보 입력 받기
+                    // 예시로 주문은 회원과 상품 목록으로 이루어진다고 가정
+                    System.out.print("회원 이름을 입력하세요: ");
+                    String memberName = scanner.nextLine();
+
+                    // 회원 정보 가져오기
+                    MemberDTO member = restController.findMemberByName(memberName);
+
+                    if (member == null) {
+                        System.out.println("해당하는 회원이 없습니다.");
+                    } else {
+                        System.out.println("주문을 해주세요.");
+                        // 상품 목록 가져오기
+                        List<GoodsDTO> goodsList = restController.getGoodsList();
+
+                        System.out.println();
+
+                        // 주문 정보 생성
+                        OrderDTO orderDTO = OrderDTO.builder()
+                                .member(MemberEntity.toEntity(member))
+                                .goods((GoodsEntity) goodsList)
+                                // 기타 주문과 관련된 정보 추가
+                                .build();
+
+                        // 주문 서비스 호출
+                        restController.placeOrder(orderDTO);
+
+                        System.out.println("주문이 완료되었습니다.");
+                    }
                     break;
 
                 default:

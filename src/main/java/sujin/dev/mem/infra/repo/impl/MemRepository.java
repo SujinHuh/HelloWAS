@@ -49,4 +49,13 @@ public class MemRepository implements DataRepository<MemberEntity> {
     public void insert(MemberEntity memberEntity) {
         this.members.add(memberEntity);
     }
+
+    @Override
+    public MemberEntity findByMemberName(String memberName) {
+
+        return members.stream()
+                .filter(members -> members.getName().equals(memberName))
+                .findFirst()
+                .orElse(null);
+    }
 }

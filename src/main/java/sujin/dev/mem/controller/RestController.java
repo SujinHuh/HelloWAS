@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import sujin.dev.mem.domain.entity.CartEntity;
 import sujin.dev.mem.domain.entity.GoodsEntity;
 import sujin.dev.mem.domain.entity.MemberEntity;
-import sujin.dev.mem.domain.model.CartDTO;
-import sujin.dev.mem.domain.model.GoodsDTO;
-import sujin.dev.mem.domain.model.MemberDTO;
-import sujin.dev.mem.domain.model.ResponseResult;
+import sujin.dev.mem.domain.model.*;
 import sujin.dev.mem.domain.service.CartService;
 import sujin.dev.mem.domain.service.GoodsService;
 import sujin.dev.mem.domain.service.MemberService;
@@ -128,4 +125,22 @@ public class RestController {
         }
     }
 
+    public MemberDTO findMemberByName(String memberName) {
+        // MemberService를 통해 회원 찾기
+        MemberDTO foundMember = memberService.findMemberByName(memberName);
+
+        if (foundMember != null) {
+            System.out.println("회원이 있습니다. 회원 이름: " + foundMember.getName());
+        } else {
+            System.out.println("해당하는 회원이 없습니다.");
+        }
+
+        return foundMember;
+    }
+
+    public void placeOrder(OrderDTO orderDTO) {
+
+    }
 }
+
+

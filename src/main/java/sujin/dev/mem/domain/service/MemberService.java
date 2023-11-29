@@ -12,6 +12,9 @@ public interface MemberService {
 
     List<MemberDTO> getMembers();
     MemberDTO mapToDTO(MemberEntity member);
+
+    MemberDTO findMemberByName(String memberName);
+
     @RequiredArgsConstructor
     class MemberServiceImpl implements MemberService {
         private final DataRepository<MemberEntity> repository;
@@ -48,6 +51,21 @@ public interface MemberService {
                     .name(member.getName())
                     .phone(member.getPhone())
                     .build();
+        }
+
+        @Override
+        public MemberDTO findMemberByName(String memberName) {
+
+            MemberEntity member = repository.findByMemberName(memberName);
+
+            // MemberEntity를 MemberDTO로 매핑
+            return member != null
+                    ? MemberDTO.builder()
+                    .name(member.getName())
+                    .phone(member.getPhone())
+                    // 필요한 다른 정보들도 매핑
+                    .build()
+                    : null; // 찾지 못한 경우 null 반환
         }
 
         private MemberDTO convertToDTO(MemberEntity memberEntity){
