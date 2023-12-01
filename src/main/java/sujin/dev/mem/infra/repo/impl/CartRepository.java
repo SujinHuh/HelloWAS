@@ -40,4 +40,9 @@ public class CartRepository implements DataRepository<CartEntity> {
     public void insert(CartEntity cart) {
         this.carts.add(cart);
     }
+
+    @Override
+    public CartEntity findByMemberName(String memberName) {
+        return null;
+    }
 }

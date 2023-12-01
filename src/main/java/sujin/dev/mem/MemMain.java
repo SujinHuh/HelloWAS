@@ -10,9 +10,11 @@ import sujin.dev.mem.domain.model.OrderDTO;
 import sujin.dev.mem.domain.service.CartService;
 import sujin.dev.mem.domain.service.GoodsService;
 import sujin.dev.mem.domain.service.MemberService;
+import sujin.dev.mem.domain.service.OrderService;
 import sujin.dev.mem.infra.repo.impl.CartRepository;
 import sujin.dev.mem.infra.repo.impl.GoodsRepository;
 import sujin.dev.mem.infra.repo.impl.MemRepository;
+import sujin.dev.mem.infra.repo.impl.OrderRepository;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -30,13 +32,13 @@ public class MemMain {
         // - MemRepository는 ArrayList를 사용한 메모리 기반의 더미 데이터 저장소를 가짐
         MemberService memberService = new MemberService.MemberServiceImpl(new MemRepository(new ArrayList<>()));
         GoodsService goodsService = new GoodsService.GoodsServiceImpl(new GoodsRepository(new ArrayList<>()));
-
+        OrderService orderService = new OrderService.OrderServiceImpl(new OrderRepository(new ArrayList<>()));
         // CartService 생성 시에 필요한 의존성 주입
         CartService cartService = new CartService.CartServiceImple(new CartRepository(new ArrayList<>()), goodsService, memberService);
 
         // RestController 생성 및 초기화
         // - RestController는 MemberService를 의존성 주입받음
-        RestController restController = new RestController(memberService, cartService, goodsService);
+        RestController restController = new RestController(memberService, cartService, goodsService,orderService);
 
         // MemberDTO 생성
         // - MemberDTO.builder()를 통해 빌더 패턴 활용
@@ -129,8 +131,7 @@ public class MemMain {
                     System.out.println("주문하기");
                     System.out.println();
 
-                    // 주문과 관련된 정보 입력 받기
-                    // 예시로 주문은 회원과 상품 목록으로 이루어진다고 가정
+                    // 회원 정보 입력 받기
                     System.out.print("회원 이름을 입력하세요: ");
                     String memberName = scanner.nextLine();
 
@@ -141,22 +142,7 @@ public class MemMain {
                         System.out.println("해당하는 회원이 없습니다.");
                     } else {
                         System.out.println("주문을 해주세요.");
-                        // 상품 목록 가져오기
-                        List<GoodsDTO> goodsList = restController.getGoodsList();
-
-                        System.out.println();
-
-                        // 주문 정보 생성
-                        OrderDTO orderDTO = OrderDTO.builder()
-                                .member(MemberEntity.toEntity(member))
-                                .goods((GoodsEntity) goodsList)
-                                // 기타 주문과 관련된 정보 추가
-                                .build();
-
-                        // 주문 서비스 호출
-                        restController.placeOrder(orderDTO);
-
-                        System.out.println("주문이 완료되었습니다.");
+                        restController.placeOrder(member);
                     }
                     break;
 

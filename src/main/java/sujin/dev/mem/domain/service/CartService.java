@@ -17,6 +17,8 @@ public interface CartService {
 
     List<CartDTO> getCartList();
 
+    void clearCart(MemberDTO member);
+
     @RequiredArgsConstructor
     class CartServiceImple implements CartService {
         public final DataRepository<CartEntity> repository;
@@ -27,10 +29,10 @@ public interface CartService {
         public void registerCart(CartEntity cart) {
             try {
                 CartEntity byId = this.repository.findById(cart.getId());
-                if(byId == null) {
+                if (byId == null) {
                     this.repository.insert(cart);
                 }
-                this. repository.update(cart);
+                this.repository.update(cart);
             } catch (RuntimeException re) {
                 re.printStackTrace();
             }
@@ -38,22 +40,36 @@ public interface CartService {
 
         @Override
         public List<CartDTO> getCartList() {
-            return this.repository.findAll().stream()
-                    .map(c -> {
-                        CartDTO cartDTO = new CartDTO();
-                        cartDTO.setGoods(GoodsEntity.toEntity(GoodsDTO.builder()
-                                .name(c.getGoods().getName())
-                                        .build()));
-                        cartDTO.setMember(MemberEntity.toEntity(MemberDTO.builder()
-                                .name(c.getMember().getName())
-                                .phone(c.getMember().getPhone())
-                                .build()));
-                        cartDTO.setGoods(GoodsEntity.toEntity(GoodsDTO.builder()
-                                .stockQuantity(c.getGoods().getStockQuantity())
-                                .build()));
-                        return cartDTO;
-                    })
-                    .collect(Collectors.toList());
+            // 모든 장바구니 정보를 가져와서 반환
+            List<CartEntity> cartEntities = repository.findAll();
+            return cartEntities.stream()
+                    .map(this::mapToDTO)
+                    .toList();
+        }
+
+        // CartEntity를 CartDTO로 매핑하는 메서드
+        private CartDTO mapToDTO(CartEntity cartEntity) {
+            return CartDTO.builder()
+                    .member(cartEntity.getMember())
+                    .goodsList(cartEntity.getGoodsList())
+                    .orders(cartEntity.getOrders())
+                    .build();
+        }
+
+        @Override
+        public void clearCart(MemberDTO member) {
+            // MemberDTO를 MemberEntity로 변환
+            MemberEntity memberEntity = MemberEntity.toEntity(member);
+
+            // MemberEntity의 id를 기반으로 장바구니 조회
+            CartEntity cart = repository.findById(memberEntity.getId());
+
+            if (cart != null) {
+                // 장바구니에 있는 상품들을 모두 삭제
+                cart.getGoodsList().clear();
+                // 변경된 장바구니 엔터티를 저장
+                repository.update(cart);
+            }
         }
     }
 }

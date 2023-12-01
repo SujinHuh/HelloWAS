@@ -40,4 +40,9 @@ public class GoodsRepository implements DataRepository<GoodsEntity> {
     public void insert(GoodsEntity goods) {
         this.goods.add(goods);
     }
+
+    @Override
+    public GoodsEntity findByMemberName(String memberName) {
+        return null;
+    }
 }
