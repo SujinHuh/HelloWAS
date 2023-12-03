@@ -11,10 +11,8 @@ import sujin.dev.mem.domain.service.MemberService;
 import sujin.dev.mem.domain.service.OrderService;
 
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Currency;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class RestController {
@@ -116,11 +114,11 @@ public class RestController {
             System.out.println("=== 장바구니 목록 === ");
 
             for (CartDTO cart : cartList) {
-                List<GoodsEntity> goodsList = cart.getGoodsList();
-                MemberEntity member = cart.getMember();
+                List<GoodsDTO> goodsList = cart.getGoodsList();
+                MemberEntity member = MemberEntity.toEntity(cart.getMember());
 
                 if (goodsList != null && !goodsList.isEmpty()) {
-                    for (GoodsEntity goods : goodsList) {
+                    for (GoodsDTO goods : goodsList) {
                         System.out.println("상품명: " + goods.getName() +
                                 ", 상품 가격: " + goods.getCurrentValue().getAmount() + " " + goods.getCurrentValue().getCurrency() +
                                 ", 상품 개수: " + goods.getStockQuantity() +
@@ -178,12 +176,16 @@ public class RestController {
         scanner.nextLine(); // 개행 문자 소비
 
         // 주문DTO를 선택한 상품과 주문 개수로 업데이트
+        List<GoodsEntity> goodsEntityList = goodsList.stream()
+                .map(GoodsDTO::toEntity)
+                .collect(Collectors.toList());
+
         OrderDTO orderDTO = OrderDTO.builder()
-                .member(MemberEntity.toEntity(member))
-                .goods((GoodsEntity) goodsList)
+                .member(member)
+                .carts(new ArrayList<>())  // 빈 carts 리스트로 초기화
                 .stockQuantity(orderQuantity)
-                // 기타 주문과 관련된 정보 추가
                 .build();
+
 
         // 주문 서비스 호출
         orderService.registerOrder(OrdersEntity.toEntity(orderDTO));

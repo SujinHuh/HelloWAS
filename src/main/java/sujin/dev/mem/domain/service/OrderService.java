@@ -32,7 +32,7 @@ public interface OrderService {
         public List<OrderDTO> getOrders() {
             return this.repository.findAll().stream().map(o ->{
                 OrderDTO orderDTO = new OrderDTO();
-                orderDTO.setCarts(o.getCarts());
+                orderDTO.setGoodsList(o.getGoodsList());
                 orderDTO.setMember(o.getMember());
                 orderDTO.setGoods(o.getGoods());
                 orderDTO.setStockQuantity(o.getStockQuantity());

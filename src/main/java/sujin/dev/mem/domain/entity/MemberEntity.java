@@ -1,6 +1,5 @@
 package sujin.dev.mem.domain.entity;
 
-import jakarta.persistence.Entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

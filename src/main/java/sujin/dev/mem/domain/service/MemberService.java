@@ -2,7 +2,6 @@ package sujin.dev.mem.domain.service;
 
 import lombok.RequiredArgsConstructor;
 import sujin.dev.mem.domain.entity.MemberEntity;
-import sujin.dev.mem.domain.model.MemberDTO;
 import sujin.dev.mem.infra.repo.DataRepository;
 
 import java.util.List;
@@ -10,10 +9,10 @@ import java.util.List;
 public interface MemberService {
     void registerMember(MemberEntity member);
 
-    List<MemberDTO> getMembers();
-    MemberDTO mapToDTO(MemberEntity member);
+    List<sujin.dev.mem.domain.model.MemberDTO> getMembers();
+    sujin.dev.mem.domain.model.MemberDTO mapToDTO(MemberEntity member);
 
-    MemberDTO findMemberByName(String memberName);
+    sujin.dev.mem.domain.model.MemberDTO findMemberByName(String memberName);
 
     @RequiredArgsConstructor
     class MemberServiceImpl implements MemberService {
@@ -32,9 +31,9 @@ public interface MemberService {
         }
 
         @Override
-        public List<MemberDTO> getMembers() {
+        public List<sujin.dev.mem.domain.model.MemberDTO> getMembers() {
             return this.repository.findAll().stream().map(m -> {
-                MemberDTO memberDTO = new MemberDTO();
+                sujin.dev.mem.domain.model.MemberDTO memberDTO = new sujin.dev.mem.domain.model.MemberDTO();
                 memberDTO.setName(m.getName());
                 memberDTO.setPhone(m.getPhone());
                 return memberDTO;
@@ -42,25 +41,25 @@ public interface MemberService {
         }
 
         @Override
-        public MemberDTO mapToDTO(MemberEntity member) {
+        public sujin.dev.mem.domain.model.MemberDTO mapToDTO(MemberEntity member) {
             if (member == null) {
                 return null;
             }
 
-            return MemberDTO.builder()
+            return sujin.dev.mem.domain.model.MemberDTO.builder()
                     .name(member.getName())
                     .phone(member.getPhone())
                     .build();
         }
 
         @Override
-        public MemberDTO findMemberByName(String memberName) {
+        public sujin.dev.mem.domain.model.MemberDTO findMemberByName(String memberName) {
 
             MemberEntity member = repository.findByMemberName(memberName);
 
             // MemberEntity를 MemberDTO로 매핑
             return member != null
-                    ? MemberDTO.builder()
+                    ? sujin.dev.mem.domain.model.MemberDTO.builder()
                     .name(member.getName())
                     .phone(member.getPhone())
                     // 필요한 다른 정보들도 매핑
@@ -68,8 +67,8 @@ public interface MemberService {
                     : null; // 찾지 못한 경우 null 반환
         }
 
-        private MemberDTO convertToDTO(MemberEntity memberEntity){
-            return MemberDTO.builder()
+        private sujin.dev.mem.domain.model.MemberDTO convertToDTO(MemberEntity memberEntity){
+            return sujin.dev.mem.domain.model.MemberDTO.builder()
                     .name(memberEntity.getName())
                     .phone(memberEntity.getPhone())
                     .build();

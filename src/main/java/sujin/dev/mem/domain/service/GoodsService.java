@@ -2,7 +2,6 @@ package sujin.dev.mem.domain.service;
 
 import lombok.RequiredArgsConstructor;
 import sujin.dev.mem.domain.entity.GoodsEntity;
-import sujin.dev.mem.domain.model.GoodsDTO;
 import sujin.dev.mem.infra.repo.DataRepository;
 
 import java.util.List;
@@ -11,8 +10,8 @@ import java.util.Optional;
 public interface GoodsService {
     void registerGoods(GoodsEntity goods);
 
-    List<GoodsDTO> getGoods();
-    GoodsDTO mapToDTO(GoodsEntity goods);
+    List<sujin.dev.mem.domain.model.GoodsDTO> getGoods();
+    sujin.dev.mem.domain.model.GoodsDTO mapToDTO(GoodsEntity goods);
     @RequiredArgsConstructor // 생성자 자동생성
     class GoodsServiceImpl implements GoodsService {
         private final DataRepository<GoodsEntity> repository;
@@ -34,14 +33,14 @@ public interface GoodsService {
         }
 
         @Override
-        public GoodsDTO mapToDTO(GoodsEntity goods) {
+        public sujin.dev.mem.domain.model.GoodsDTO mapToDTO(GoodsEntity goods) {
             if (goods == null) {
                 return null;
             }
 
-            return GoodsDTO.builder()
+            return sujin.dev.mem.domain.model.GoodsDTO.builder()
                     .name(goods.getName())
-                    .currentValue(GoodsDTO.CurrentValueEntity.builder()
+                    .currentValue(sujin.dev.mem.domain.model.GoodsDTO.CurrentValueEntity.builder()
                             .amount(goods.getCurrentValue().getAmount())
                             .currency(goods.getCurrentValue().getCurrency())
                             .build())
@@ -50,20 +49,20 @@ public interface GoodsService {
         }
 
         @Override
-        public List<GoodsDTO> getGoods() {
+        public List<sujin.dev.mem.domain.model.GoodsDTO> getGoods() {
             return this.repository.findAll().stream()
                     .map(this::convertToDTO)
                     .toList();
         }
 
 
-        private GoodsDTO convertToDTO(GoodsEntity goodsEntity) {
+        private sujin.dev.mem.domain.model.GoodsDTO convertToDTO(GoodsEntity goodsEntity) {
                 if (goodsEntity == null) {
                     return null;
                 }
-            return GoodsDTO.builder()
+            return sujin.dev.mem.domain.model.GoodsDTO.builder()
                     .name(goodsEntity.getName())
-                    .currentValue(GoodsDTO.CurrentValueEntity.builder()
+                    .currentValue(sujin.dev.mem.domain.model.GoodsDTO.CurrentValueEntity.builder()
                             .amount(goodsEntity.getCurrentValue().getAmount())
                             .currency(goodsEntity.getCurrentValue().getCurrency())
                             .build())

@@ -2,11 +2,9 @@ package sujin.dev.mem;
 
 import lombok.extern.slf4j.Slf4j;
 import sujin.dev.mem.controller.RestController;
-import sujin.dev.mem.domain.entity.GoodsEntity;
 import sujin.dev.mem.domain.entity.MemberEntity;
 import sujin.dev.mem.domain.model.GoodsDTO;
 import sujin.dev.mem.domain.model.MemberDTO;
-import sujin.dev.mem.domain.model.OrderDTO;
 import sujin.dev.mem.domain.service.CartService;
 import sujin.dev.mem.domain.service.GoodsService;
 import sujin.dev.mem.domain.service.MemberService;
@@ -19,7 +17,6 @@ import sujin.dev.mem.infra.repo.impl.OrderRepository;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Currency;
-import java.util.List;
 import java.util.Scanner;
 
 @Slf4j
@@ -74,12 +71,12 @@ public class MemMain {
                     System.out.print("전화번호를 입력하세요: ");
                     String phone = scanner.nextLine();
 
-                    MemberDTO memberDTO = MemberDTO.builder()
+                    MemberDTO memberEntity = MemberDTO.builder()
                             .name(name)
                             .phone(phone)
                             .build();
 
-                    restController.registerMember(memberDTO);
+                    restController.registerMember(memberEntity);
                     System.out.println();
                     System.out.println("회원가입이 완료되었습니다.");
                     break;
@@ -104,7 +101,7 @@ public class MemMain {
 
                     GoodsDTO goodsDTO = GoodsDTO.builder()
                             .name(goodsName)
-                            .currentValue(GoodsDTO.CurrentValueEntity.builder()
+                            .currentValue(GoodsDTO.CurrentValueDTO.builder()
                                     .amount(goodsAmount)
                                     .currency(Currency.getInstance("KRW"))
                                     .build())

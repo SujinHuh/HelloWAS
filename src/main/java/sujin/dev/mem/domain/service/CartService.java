@@ -2,7 +2,6 @@ package sujin.dev.mem.domain.service;
 
 import lombok.RequiredArgsConstructor;
 import sujin.dev.mem.domain.entity.CartEntity;
-import sujin.dev.mem.domain.entity.GoodsEntity;
 import sujin.dev.mem.domain.entity.MemberEntity;
 import sujin.dev.mem.domain.model.CartDTO;
 import sujin.dev.mem.domain.model.GoodsDTO;
@@ -10,7 +9,6 @@ import sujin.dev.mem.domain.model.MemberDTO;
 import sujin.dev.mem.infra.repo.DataRepository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public interface CartService {
     void registerCart(CartEntity cart);
@@ -50,14 +48,14 @@ public interface CartService {
         // CartEntity를 CartDTO로 매핑하는 메서드
         private CartDTO mapToDTO(CartEntity cartEntity) {
             return CartDTO.builder()
-                    .member(cartEntity.getMember())
+                    .member(MemberDTO.fromEntity(cartEntity.getMember()))
                     .goodsList(cartEntity.getGoodsList())
-                    .orders(cartEntity.getOrders())
+                    .orders(OrdersEntity.toDTO(cartEntity.getOrders()))
                     .build();
         }
 
         @Override
-        public void clearCart(MemberDTO member) {
+        public void clearCart(sujin.dev.mem.domain.model.MemberDTO member) {
             // MemberDTO를 MemberEntity로 변환
             MemberEntity memberEntity = MemberEntity.toEntity(member);
 

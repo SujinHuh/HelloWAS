@@ -8,5 +8,17 @@ public class MemberDTO {
 //    private long id;
     private String name;
     private String phone;
+    public static MemberEntity toEntity(MemberDTO memberDTO) {
+        return MemberEntity.builder()
+                .name(memberDTO.getName())
+                .phone(memberDTO.getPhone())
+                .build();
+    }
 
+    public static MemberDTO fromEntity(MemberEntity memberEntity) {
+        return MemberDTO.builder()
+                .name(memberEntity.getName())
+                .phone(memberEntity.getPhone())
+                .build();
+    }
 }
