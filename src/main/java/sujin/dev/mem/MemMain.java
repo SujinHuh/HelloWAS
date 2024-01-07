@@ -16,6 +16,9 @@ import java.util.Scanner;
 @Slf4j
 public class MemMain {
 
+    // 전역 변수로 currentLoggedInMember 선언
+    private static MemberDTO currentLoggedInMember = null;
+
     public static void main(String[] args) {
 
         // MemberService 생성 및 초기화
@@ -31,12 +34,6 @@ public class MemMain {
 
         // RestController 생성 및 초기화
         RestController restController = new RestController(memberService, cartService, goodsService,cartGoodsService,orderService);
-
-        // MemberDTO 생성
-        // - MemberDTO.builder()를 통해 빌더 패턴 활용
-//        MemberDTO memberDTO = MemberDTO.builder()
-//                .name("수진_94")
-//                .phone("123123").build();
 
 
         // Scanner 객체 생성
@@ -88,11 +85,20 @@ public class MemMain {
                     System.out.println();
                     break;
                 case 2:
-                    System.out.println("회원 목록 조회");
-                    System.out.println();
+                    // 로그인 로직
+                    System.out.print("아이디를 입력하세요: ");
+                    String memberId = scanner.nextLine();
 
-                    restController.getmemberList();
+                    System.out.print("비밀번호를 입력하세요: ");
+                    String memberPassword = scanner.nextLine();
 
+                    MemberDTO memberLogin = restController.login(memberId, memberPassword);
+                    if (memberLogin != null) {
+                        currentLoggedInMember = memberLogin;
+                        System.out.println(memberLogin.getName() + "님, 환영합니다!");
+                    } else {
+                        System.out.println("로그인 실패: 아이디 또는 비밀번호가 잘못되었습니다.");
+                    }
                     break;
                 case 3:
                     System.out.print("상품 이름을 입력하세요: ");
@@ -130,30 +136,21 @@ public class MemMain {
                     restController.getGoodsList();
                     break;
                 case 5:
+                    if (currentLoggedInMember == null) {
+                        System.out.println("로그인이 필요한 기능입니다.");
+                        break;
+                    }
                     System.out.println("장바구니 목록 조회");
-                    System.out.println();
-
-                    restController.getCartList(member);
+                    restController.getCartList(currentLoggedInMember);
+                    break;
 
                 case 6:
-                    System.out.println("주문하기");
-                    System.out.println();
-
-                    restController.getmemberList();
-
-                    // 회원 정보 입력 받기
-                    System.out.print("회원 이름을 입력하세요: ");
-                    String memberId = scanner.nextLine();
-
-//                    회원 정보 가져오기
-                    MemberDTO findMember = restController.findMemberId(memberId);
-
-                    if ( findMember == null) {
-                        System.out.println("해당하는 회원이 없습니다.");
-                    } else {
-                        System.out.println("주문을 해주세요.");
-                        restController.placeOrder(findMember);
+                    if (currentLoggedInMember == null) {
+                        System.out.println("로그인이 필요한 기능입니다.");
+                        break;
                     }
+                    System.out.println("주문하기");
+                    restController.placeOrder(currentLoggedInMember);
                     break;
 
                 default:

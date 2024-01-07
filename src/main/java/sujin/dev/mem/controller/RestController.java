@@ -205,7 +205,6 @@ public class RestController {
         }
     }
 
-
     public void getGoodsList(List<GoodsDTO> goodsList) {
 
         System.out.println("=== 상품목록 === ");
@@ -219,6 +218,12 @@ public class RestController {
                     ", 상품 개수:" + goods.getStockQuantity());
         }
 
+    }
+
+    public MemberDTO login(String memberId,String password) {
+        return Optional.ofNullable(memberService.findByMemberId(memberId))
+                .filter(member -> password.equals(member.getPassword()))
+                .orElse(null);
     }
 }
 
