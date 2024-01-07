@@ -5,6 +5,7 @@ import sujin.dev.mem.domain.entity.CartEntity;
 import sujin.dev.mem.infra.repo.DataRepository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class CartRepository implements DataRepository<CartEntity> {
@@ -41,8 +42,10 @@ public class CartRepository implements DataRepository<CartEntity> {
         this.carts.add(cart);
     }
 
-    @Override
-    public CartEntity findByMemberName(String memberName) {
-        return null;
+    public List<CartEntity> findByMemberId(String memberId) {
+        return carts.stream()
+                .filter(cart -> cart.getMember() != null && memberId.equals(cart.getMember().getMemberId()))
+                .collect(Collectors.toList());
     }
+
 }

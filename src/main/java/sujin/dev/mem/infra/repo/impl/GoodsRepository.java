@@ -41,8 +41,11 @@ public class GoodsRepository implements DataRepository<GoodsEntity> {
         this.goods.add(goods);
     }
 
-    @Override
-    public GoodsEntity findByMemberName(String memberName) {
-        return null;
+    public GoodsEntity findGoodsEntityByName(String name){
+        return goods.stream()
+                .filter(g -> g.getName().equals(name))
+                .findFirst()
+                .orElse(null);
     }
+
 }

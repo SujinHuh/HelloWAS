@@ -5,6 +5,7 @@ import sujin.dev.mem.domain.entity.MemberEntity;
 import sujin.dev.mem.infra.repo.DataRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public class MemRepository implements DataRepository<MemberEntity> {
@@ -50,12 +51,11 @@ public class MemRepository implements DataRepository<MemberEntity> {
         this.members.add(memberEntity);
     }
 
-    @Override
-    public MemberEntity findByMemberName(String memberName) {
-
+    public MemberEntity findByMemberId(String memberId) {
         return members.stream()
-                .filter(members -> members.getName().equals(memberName))
+                .filter(members -> members.getName().equals(memberId))
                 .findFirst()
                 .orElse(null);
+
     }
 }

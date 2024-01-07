@@ -15,29 +15,15 @@ public interface OrderService {
     class OrderServiceImpl implements OrderService {
         private final DataRepository<OrdersEntity> repository;
 
+
         @Override
         public void registerOrder(OrdersEntity order) {
-            try {
-                OrdersEntity byId = this.repository.findById(order.getId());
-                if (byId == null) {
-                    this.repository.insert(order);
-                }
-                this.repository.update(order);
-            } catch (RuntimeException re) {
-                re.printStackTrace();
-            }
+
         }
 
         @Override
         public List<OrderDTO> getOrders() {
-            return this.repository.findAll().stream().map(o ->{
-                OrderDTO orderDTO = new OrderDTO();
-                orderDTO.setGoodsList(o.getGoodsList());
-                orderDTO.setMember(o.getMember());
-                orderDTO.setGoods(o.getGoods());
-                orderDTO.setStockQuantity(o.getStockQuantity());
-                return orderDTO;
-            }).toList();
+            return null;
         }
     }
 }

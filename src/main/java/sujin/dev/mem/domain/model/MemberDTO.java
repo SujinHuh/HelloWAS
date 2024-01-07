@@ -6,19 +6,18 @@ import sujin.dev.mem.domain.entity.MemberEntity;
 @Setter @Getter @Builder @AllArgsConstructor @NoArgsConstructor
 public class MemberDTO {
 //    private long id;
-    private String name;
+    private String memberId; // 사용자 이름 또는 이메일
+    private String name;     // 실제 이름 또는 별명
+    private String password; // 비밀번호
     private String phone;
-    public static MemberEntity toEntity(MemberDTO memberDTO) {
-        return MemberEntity.builder()
-                .name(memberDTO.getName())
-                .phone(memberDTO.getPhone())
-                .build();
-    }
+    private String address;
 
-    public static MemberDTO fromEntity(MemberEntity memberEntity) {
-        return MemberDTO.builder()
-                .name(memberEntity.getName())
-                .phone(memberEntity.getPhone())
+    public static MemberDTO fromEntity(MemberEntity member) {
+        return member == null ? null : MemberDTO.builder()
+                .memberId(member.getMemberId())
+                .name(member.getName())
+                .phone(member.getPhone())
+                .address(member.getAddress())
                 .build();
     }
 }

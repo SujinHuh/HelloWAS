@@ -2,17 +2,11 @@ package sujin.dev.mem;
 
 import lombok.extern.slf4j.Slf4j;
 import sujin.dev.mem.controller.RestController;
-import sujin.dev.mem.domain.entity.MemberEntity;
+import sujin.dev.mem.domain.model.CurrentValueDTO;
 import sujin.dev.mem.domain.model.GoodsDTO;
 import sujin.dev.mem.domain.model.MemberDTO;
-import sujin.dev.mem.domain.service.CartService;
-import sujin.dev.mem.domain.service.GoodsService;
-import sujin.dev.mem.domain.service.MemberService;
-import sujin.dev.mem.domain.service.OrderService;
-import sujin.dev.mem.infra.repo.impl.CartRepository;
-import sujin.dev.mem.infra.repo.impl.GoodsRepository;
-import sujin.dev.mem.infra.repo.impl.MemRepository;
-import sujin.dev.mem.infra.repo.impl.OrderRepository;
+import sujin.dev.mem.domain.service.*;
+import sujin.dev.mem.infra.repo.impl.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -30,12 +24,13 @@ public class MemMain {
         MemberService memberService = new MemberService.MemberServiceImpl(new MemRepository(new ArrayList<>()));
         GoodsService goodsService = new GoodsService.GoodsServiceImpl(new GoodsRepository(new ArrayList<>()));
         OrderService orderService = new OrderService.OrderServiceImpl(new OrderRepository(new ArrayList<>()));
+
+        CartGoodsService cartGoodsService = new CartGoodsService.CartGoodsServiceImple(new CartGoodsRepository(new ArrayList<>()),memberService);
         // CartService 생성 시에 필요한 의존성 주입
         CartService cartService = new CartService.CartServiceImple(new CartRepository(new ArrayList<>()), goodsService, memberService);
 
         // RestController 생성 및 초기화
-        // - RestController는 MemberService를 의존성 주입받음
-        RestController restController = new RestController(memberService, cartService, goodsService,orderService);
+        RestController restController = new RestController(memberService, cartService, goodsService,cartGoodsService,orderService);
 
         // MemberDTO 생성
         // - MemberDTO.builder()를 통해 빌더 패턴 활용
@@ -68,17 +63,29 @@ public class MemMain {
                     System.out.print("이름을 입력하세요: ");
                     String name = scanner.nextLine();
 
+                    System.out.print("아이디 입력하세요: ");
+                    String userName = scanner.nextLine();
+
+                    System.out.print("비밀번호을 입력하세요: ");
+                    String password = scanner.nextLine();
+
+                    System.out.print("주소을 입력하세요: ");
+                    String address = scanner.nextLine();
+
                     System.out.print("전화번호를 입력하세요: ");
                     String phone = scanner.nextLine();
 
-                    MemberDTO memberEntity = MemberDTO.builder()
+                    MemberDTO member = MemberDTO.builder()
                             .name(name)
+                            .memberId(userName)
+                            .password(password)
                             .phone(phone)
+                            .address(address)
                             .build();
 
-                    restController.registerMember(memberEntity);
+                    restController.registerMember(member);
+
                     System.out.println();
-                    System.out.println("회원가입이 완료되었습니다.");
                     break;
                 case 2:
                     System.out.println("회원 목록 조회");
@@ -93,22 +100,26 @@ public class MemMain {
 
                     System.out.print("상품 가격을 입력하세요: ");
                     BigDecimal goodsAmount = scanner.nextBigDecimal();
-                    scanner.nextLine(); // Enter 키 소진
+                    scanner.nextLine();
 
                     System.out.print("상품 재고 수량을 입력하세요: ");
                     int stockQuantity = scanner.nextInt();
-                    scanner.nextLine(); // Enter 키 소진
+                    scanner.nextLine();
 
-                    GoodsDTO goodsDTO = GoodsDTO.builder()
+                    // 상품 가격 정보를 담는 CurrentValueDTO 객체 생성
+                    CurrentValueDTO currentValue = CurrentValueDTO.builder()
+                            .amount(goodsAmount)
+                            .currency(Currency.getInstance("KRW")) // 기본 통화 USD
+                            .build();
+
+                    // GoodsDTO 객체 생성
+                    GoodsDTO goods = GoodsDTO.builder()
                             .name(goodsName)
-                            .currentValue(GoodsDTO.CurrentValueDTO.builder()
-                                    .amount(goodsAmount)
-                                    .currency(Currency.getInstance("KRW"))
-                                    .build())
+                            .currentValue(currentValue)
                             .stockQuantity(stockQuantity)
                             .build();
 
-                    restController.registerGoods(goodsDTO);
+                    restController.registerGoods(goods);
                     System.out.println();
                     System.out.println("상품 등록이 완료되었습니다.");
                     break;
@@ -122,24 +133,26 @@ public class MemMain {
                     System.out.println("장바구니 목록 조회");
                     System.out.println();
 
-                    restController.getCartList();
+                    restController.getCartList(member);
 
                 case 6:
                     System.out.println("주문하기");
                     System.out.println();
 
+                    restController.getmemberList();
+
                     // 회원 정보 입력 받기
                     System.out.print("회원 이름을 입력하세요: ");
-                    String memberName = scanner.nextLine();
+                    String memberId = scanner.nextLine();
 
-                    // 회원 정보 가져오기
-                    MemberDTO member = restController.findMemberByName(memberName);
+//                    회원 정보 가져오기
+                    MemberDTO findMember = restController.findMemberId(memberId);
 
-                    if (member == null) {
+                    if ( findMember == null) {
                         System.out.println("해당하는 회원이 없습니다.");
                     } else {
                         System.out.println("주문을 해주세요.");
-                        restController.placeOrder(member);
+                        restController.placeOrder(findMember);
                     }
                     break;
 

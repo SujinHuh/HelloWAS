@@ -2,20 +2,28 @@ package sujin.dev.mem.domain.service;
 
 import lombok.RequiredArgsConstructor;
 import sujin.dev.mem.domain.entity.CartEntity;
+import sujin.dev.mem.domain.entity.CartGoodsEntity;
+import sujin.dev.mem.domain.entity.GoodsEntity;
 import sujin.dev.mem.domain.entity.MemberEntity;
 import sujin.dev.mem.domain.model.CartDTO;
 import sujin.dev.mem.domain.model.GoodsDTO;
 import sujin.dev.mem.domain.model.MemberDTO;
 import sujin.dev.mem.infra.repo.DataRepository;
+import sujin.dev.mem.infra.repo.impl.CartRepository;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public interface CartService {
     void registerCart(CartEntity cart);
 
-    List<CartDTO> getCartList();
+    List<CartDTO> getCartList(MemberDTO member);
 
     void clearCart(MemberDTO member);
+    CartDTO addToCart(MemberDTO member, GoodsDTO selectedGoods, int quantity);
 
     @RequiredArgsConstructor
     class CartServiceImple implements CartService {
@@ -23,51 +31,74 @@ public interface CartService {
         private final GoodsService goodsService;
         private final MemberService memberService;
 
+
         @Override
         public void registerCart(CartEntity cart) {
-            try {
-                CartEntity byId = this.repository.findById(cart.getId());
-                if (byId == null) {
-                    this.repository.insert(cart);
-                }
-                this.repository.update(cart);
-            } catch (RuntimeException re) {
-                re.printStackTrace();
-            }
+            // CartEntity를 데이터베이스에 저장하는 로직 구현
+            repository.insert(cart);
         }
 
         @Override
-        public List<CartDTO> getCartList() {
-            // 모든 장바구니 정보를 가져와서 반환
-            List<CartEntity> cartEntities = repository.findAll();
+        public List<CartDTO> getCartList(MemberDTO member) {
+
+            // MemberEntity로 변환
+            MemberEntity memberEntity = memberService.findMemberEntityByMemberId(member.getMemberId());
+
+            if (memberEntity == null) {
+                return Collections.emptyList(); // 회원이 존재하지 않으면 빈 리스트 반환
+            }
+
+            // 회원 ID로 장바구니 목록 조회
+            List<CartEntity> cartEntities = ((CartRepository) repository).findByMemberId(memberEntity.getMemberId());
+
+            // CartEntity 리스트를 CartDTO 리스트로 변환
             return cartEntities.stream()
-                    .map(this::mapToDTO)
-                    .toList();
+                    .map(CartDTO::fromEntity)
+                    .collect(Collectors.toList());
         }
-
-        // CartEntity를 CartDTO로 매핑하는 메서드
-        private CartDTO mapToDTO(CartEntity cartEntity) {
-            return CartDTO.builder()
-                    .member(MemberDTO.fromEntity(cartEntity.getMember()))
-                    .goodsList(cartEntity.getGoodsList())
-                    .orders(OrdersEntity.toDTO(cartEntity.getOrders()))
-                    .build();
+        @Override
+        public void clearCart(MemberDTO member) {
+            // MemberService를 사용하여 MemberEntity 찾기
+//            MemberEntity memberEntity = memberService.findByMemberId(member.getMemberId());
+//
+//            // 해당 회원의 모든 장바구니 항목 삭제
+//            repository.deleteByMemberId(memberEntity.getId());
         }
 
         @Override
-        public void clearCart(sujin.dev.mem.domain.model.MemberDTO member) {
-            // MemberDTO를 MemberEntity로 변환
-            MemberEntity memberEntity = MemberEntity.toEntity(member);
+        public CartDTO addToCart(MemberDTO member, GoodsDTO selectedGoods, int quantity) {
+            MemberEntity memberEntity = memberService.findMemberEntityByMemberId(member.getMemberId());
 
-            // MemberEntity의 id를 기반으로 장바구니 조회
-            CartEntity cart = repository.findById(memberEntity.getId());
-
-            if (cart != null) {
-                // 장바구니에 있는 상품들을 모두 삭제
-                cart.getGoodsList().clear();
-                // 변경된 장바구니 엔터티를 저장
-                repository.update(cart);
+            if(memberEntity == null) {
+                throw new IllegalArgumentException("회원이 존재하지 않습니다.");
             }
+
+            // GoodsEntity 찾기
+            GoodsEntity goodsEntity = goodsService.findGoodsEntityByName(selectedGoods.getName());
+            if (goodsEntity == null || goodsEntity.getStockQuantity() < quantity) {
+                throw new IllegalArgumentException("상품이 없거나 재고가 부족합니다.");
+            }
+
+            // 새로운 CartGoodsEntity 생성 및 설정
+            CartGoodsEntity newCartGoods = CartGoodsEntity.builder()
+                    .goods(goodsEntity)
+                    .quantity(quantity)
+                    .build();
+
+            // 장바구니 (CartEntity) 생성 및 CartGoods 추가
+            CartEntity cart = CartEntity.builder()
+                    .member(memberEntity)
+                    .totalPrice(goodsEntity.getCurrentValue().getAmount().multiply(BigDecimal.valueOf(quantity)))
+                    .cartGoods(Arrays.asList(newCartGoods)) // 현재는 단일 상품만 추가한다고 가정
+                    .build();
+
+            // 장바구니 저장
+            repository.insert(cart);
+
+            // 장바구니 정보를 DTO로 변환하여 반환
+            return convertToDTO(cart);
         }
+
+
     }
 }

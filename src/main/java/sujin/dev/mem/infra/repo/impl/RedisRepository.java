@@ -31,6 +31,4 @@ public class RedisRepository implements DataRepository<MemberEntity> {
 
     }
 
-    @Override
-    public MemberEntity findByMemberName(String memberName) { return null; }
 }

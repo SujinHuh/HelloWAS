@@ -25,36 +25,23 @@ public class OrderRepository implements DataRepository<OrdersEntity> {
 
     @Override
     public List<OrdersEntity> findAll() {
-        return new ArrayList<>(ordersList);
+        return null;
     }
 
     @Override
     public void deleteById(long id) {
-        ordersList.removeIf(order -> order.getId() == id);
+
     }
 
     @Override
     public void update(OrdersEntity ordersEntity) {
-        OrdersEntity existingOrder = findById(ordersEntity.getId());
-        if (existingOrder != null) {
-            // Update the existing order with the new information
-            existingOrder.setCarts(ordersEntity.getCarts());
-            existingOrder.setMember(ordersEntity.getMember());
-            existingOrder.setGoods(ordersEntity.getGoods());
-            existingOrder.setStockQuantity(ordersEntity.getStockQuantity());
-        }
+
     }
 
     @Override
     public void insert(OrdersEntity ordersEntity) {
-        ordersList.add(ordersEntity);
+
     }
 
-    @Override
-    public OrdersEntity findByMemberName(String memberName) {
-        return ordersList.stream()
-                .filter(order -> order.getMember().getName().equals(memberName))
-                .findFirst()
-                .orElse(null);
-    }
+
 }

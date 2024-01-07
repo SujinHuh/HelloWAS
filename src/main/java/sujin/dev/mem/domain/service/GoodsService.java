@@ -2,16 +2,21 @@ package sujin.dev.mem.domain.service;
 
 import lombok.RequiredArgsConstructor;
 import sujin.dev.mem.domain.entity.GoodsEntity;
+import sujin.dev.mem.domain.model.GoodsDTO;
 import sujin.dev.mem.infra.repo.DataRepository;
+import sujin.dev.mem.infra.repo.impl.GoodsRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public interface GoodsService {
     void registerGoods(GoodsEntity goods);
 
-    List<sujin.dev.mem.domain.model.GoodsDTO> getGoods();
-    sujin.dev.mem.domain.model.GoodsDTO mapToDTO(GoodsEntity goods);
+    List<GoodsDTO> getGoods();
+
+    GoodsDTO mapToDTO(GoodsEntity goods);
+    GoodsEntity findGoodsEntityByName (String selectGoods);
     @RequiredArgsConstructor // 생성자 자동생성
     class GoodsServiceImpl implements GoodsService {
         private final DataRepository<GoodsEntity> repository;
@@ -33,41 +38,39 @@ public interface GoodsService {
         }
 
         @Override
-        public sujin.dev.mem.domain.model.GoodsDTO mapToDTO(GoodsEntity goods) {
-            if (goods == null) {
-                return null;
-            }
+        public List<GoodsDTO> getGoods() {
+            //1. repository 상품 엔티티 목록 가져오기.
+            List<GoodsEntity> goodsEntity = repository.findAll();
 
-            return sujin.dev.mem.domain.model.GoodsDTO.builder()
-                    .name(goods.getName())
-                    .currentValue(sujin.dev.mem.domain.model.GoodsDTO.CurrentValueEntity.builder()
-                            .amount(goods.getCurrentValue().getAmount())
-                            .currency(goods.getCurrentValue().getCurrency())
-                            .build())
-                    .stockQuantity(goods.getStockQuantity())
-                    .build();
+            //2. 상품엔티티 목록을 GoodsDTO로 변환
+            List<GoodsDTO> goodsDTO = goodsEntity.stream()
+                    .map(this::mapToDTO)
+                    .collect(Collectors.toList());
+
+            //3. 변환된 GoodsDTO목록 반환
+            return goodsDTO;
         }
 
         @Override
-        public List<sujin.dev.mem.domain.model.GoodsDTO> getGoods() {
-            return this.repository.findAll().stream()
-                    .map(this::convertToDTO)
-                    .toList();
+        public GoodsDTO mapToDTO(GoodsEntity goods) {
+            if(goods == null){
+                return null;
+            }
+            return GoodsEntity.builder()
+                    .name(goods.getName())
+                    .currentValue(goods.getCurrentValue())
+                    .stockQuantity(goods.getStockQuantity())
+                    .build().toDTO();
         }
 
-
-        private sujin.dev.mem.domain.model.GoodsDTO convertToDTO(GoodsEntity goodsEntity) {
-                if (goodsEntity == null) {
-                    return null;
-                }
-            return sujin.dev.mem.domain.model.GoodsDTO.builder()
-                    .name(goodsEntity.getName())
-                    .currentValue(sujin.dev.mem.domain.model.GoodsDTO.CurrentValueEntity.builder()
-                            .amount(goodsEntity.getCurrentValue().getAmount())
-                            .currency(goodsEntity.getCurrentValue().getCurrency())
-                            .build())
-                    .stockQuantity(goodsEntity.getStockQuantity())
-                    .build();
+        @Override
+        public GoodsEntity findGoodsEntityByName(String name) {
+            if (repository instanceof GoodsRepository) {
+                GoodsRepository goodsRepository = (GoodsRepository) repository;
+                return goodsRepository.findGoodsEntityByName(name);
+            } else {
+                throw new IllegalStateException("Repository is not an instance of GoodsRepository");
+            }
         }
 
     }
