@@ -5,9 +5,7 @@ import sujin.dev.mem.domain.entity.CartEntity;
 import sujin.dev.mem.domain.entity.CartGoodsEntity;
 import sujin.dev.mem.domain.entity.GoodsEntity;
 import sujin.dev.mem.domain.entity.MemberEntity;
-import sujin.dev.mem.domain.model.CartDTO;
-import sujin.dev.mem.domain.model.GoodsDTO;
-import sujin.dev.mem.domain.model.MemberDTO;
+import sujin.dev.mem.domain.model.*;
 import sujin.dev.mem.infra.repo.DataRepository;
 import sujin.dev.mem.infra.repo.impl.CartRepository;
 
@@ -67,10 +65,10 @@ public interface CartService {
 
         @Override
         public CartDTO addToCart(MemberDTO member, GoodsDTO selectedGoods, int quantity) {
+            // MemberEntity 찾기
             MemberEntity memberEntity = memberService.findMemberEntityByMemberId(member.getMemberId());
-
-            if(memberEntity == null) {
-                throw new IllegalArgumentException("회원이 존재하지 않습니다.");
+            if (memberEntity == null) {
+                throw new IllegalArgumentException("회원을 찾을 수 없습니다.");
             }
 
             // GoodsEntity 찾기
@@ -78,6 +76,12 @@ public interface CartService {
             if (goodsEntity == null || goodsEntity.getStockQuantity() < quantity) {
                 throw new IllegalArgumentException("상품이 없거나 재고가 부족합니다.");
             }
+
+            // 상품 가격 정보를 가져오기
+            BigDecimal pricePerUnit = goodsEntity.getCurrentValue().getAmount();
+
+            // 상품 가격과 수량을 곱하여 총 가격 계산
+            BigDecimal totalPrice = pricePerUnit.multiply(BigDecimal.valueOf(quantity));
 
             // 새로운 CartGoodsEntity 생성 및 설정
             CartGoodsEntity newCartGoods = CartGoodsEntity.builder()
@@ -88,7 +92,7 @@ public interface CartService {
             // 장바구니 (CartEntity) 생성 및 CartGoods 추가
             CartEntity cart = CartEntity.builder()
                     .member(memberEntity)
-                    .totalPrice(goodsEntity.getCurrentValue().getAmount().multiply(BigDecimal.valueOf(quantity)))
+                    .totalPrice(totalPrice)  // 계산된 총 가격 사용
                     .cartGoods(Arrays.asList(newCartGoods)) // 현재는 단일 상품만 추가한다고 가정
                     .build();
 
@@ -99,6 +103,44 @@ public interface CartService {
             return convertToDTO(cart);
         }
 
+        private CartDTO convertToDTO(CartEntity cartEntity) {
+            if (cartEntity == null) {
+                return null;
+            }
+
+            // CartGoodsEntity 리스트를 CartGoodsDTO 리스트로 변환
+            List<CartGoodsDTO> cartGoodsDTOs = cartEntity.getCartGoods() != null
+                    ? cartEntity.getCartGoods().stream()
+                    .map(this::convertCartGoodsEntityToDTO)
+                    .collect(Collectors.toList())
+                    : Collections.emptyList();
+
+            // CartEntity의 다른 필드들을 CartDTO로 매핑
+            return CartDTO.builder()
+                    .totalPrice(cartEntity.getTotalPrice())
+                    .member(MemberDTO.fromEntity(cartEntity.getMember()))
+                    .orders(OrderDTO.fromEntity(cartEntity.getOrders())) // 주문 정보가 있다면 매핑
+                    .cartGoods(cartGoodsDTOs)
+                    .build();
+        }
+
+        private CartGoodsDTO convertCartGoodsEntityToDTO(CartGoodsEntity cartGoodsEntity) {
+            if (cartGoodsEntity == null) {
+                return null;
+            }
+
+            // GoodsEntity를 GoodsDTO로 변환
+            GoodsDTO goodsDTO = cartGoodsEntity.getGoods() != null
+                    ? GoodsDTO.fromEntity(cartGoodsEntity.getGoods())
+                    : null;
+
+            // CartGoodsEntity를 CartGoodsDTO로 변환
+            return CartGoodsDTO.builder()
+                    .quantity(cartGoodsEntity.getQuantity())
+                    .totalPrice(cartGoodsEntity.getTotalPrice())
+                    .goods(goodsDTO)
+                    .build();
+        }
 
     }
 }

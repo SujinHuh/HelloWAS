@@ -53,9 +53,8 @@ public class MemRepository implements DataRepository<MemberEntity> {
 
     public MemberEntity findByMemberId(String memberId) {
         return members.stream()
-                .filter(members -> members.getName().equals(memberId))
+                .filter(member -> memberId.equals(member.getMemberId()))
                 .findFirst()
                 .orElse(null);
-
     }
 }

@@ -6,6 +6,7 @@ import sujin.dev.mem.domain.entity.GoodsEntity;
 import sujin.dev.mem.domain.entity.MemberEntity;
 import sujin.dev.mem.domain.entity.OrdersEntity;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Setter @Getter @Builder @AllArgsConstructor @NoArgsConstructor
 public class CartDTO {
-    private double totalPrice;
+    private BigDecimal totalPrice;
     private MemberDTO member;
     private OrderDTO orders;
     private List<CartGoodsDTO> cartGoods; // 1:N 관계, CartDTO to CartGoodsDTO

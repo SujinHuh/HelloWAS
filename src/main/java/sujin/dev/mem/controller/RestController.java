@@ -163,10 +163,16 @@ public class RestController {
         // 상품 목록 가져오기
         List<GoodsDTO> goodsList = getGoodsList();
 
-        // 사용 가능한 상품 목록 표시
-        getGoodsList(goodsList);
+        // 상품 목록이 비어있는 경우 메시지 표시 후 초기 화면으로 복귀
+        if (goodsList.isEmpty()) {
+            System.out.println("등록된 상품이 없습니다.");
+            return; // 초기 화면으로 복귀
+        }
 
-        // 선택한 물건에 대한 입력 받기
+        // 사용 가능한 상품 목록 표시
+//        getGoodsList(goodsList);
+//
+        // 선택할 상품 번호 입력 받기
         System.out.print("선택할 상품 번호를 입력하세요: ");
         int selectedItemIndex = scanner.nextInt();
         scanner.nextLine();
@@ -184,24 +190,29 @@ public class RestController {
         scanner.nextLine();
 
         // 옵션 선택 (장바구니 추가/ 바로 구매)
-        System.out.println("1: 장바구니 추가 , 2: 바로 구매");
-        System.out.println("번호 선택 : ");
+        System.out.println("1: 장바구니 추가, 2: 바로 구매");
+        System.out.print("번호 선택: ");
         int option = scanner.nextInt();
         scanner.nextLine();
 
-        if(option == 1) {
-            cartService.addToCart(member,selectedGoods, orderQuantity);
-            System.out.println("장바구니에 상품이 추가되었습니다.");
-            //장바구니에 getCartList로 보여주기? ex) 장바구니 바로 가시겠습니까?
-            getCartList(member);
-        } else if (option == 2) {
-            // 바로 구매 로직
-//            OrderDTO order = createNewOrder(member);
-//            processOrderItem(selectedGoods, orderQuantity, order);
-//            saveOrder(order);
-            System.out.println("구매가 완료되었습니다.");
-        } else {
-            System.out.println("유효하지 않은 옵션입니다.");
+        switch (option) {
+            case 1:
+                // 장바구니 추가 로직
+                cartService.addToCart(member, selectedGoods, orderQuantity);
+                System.out.println("장바구니에 상품이 추가되었습니다.");
+                // 장바구니 내용 보여주기 (선택적)
+                // getCartList(member);
+                break;
+            case 2:
+                // 바로 구매 로직
+                // OrderDTO order = createNewOrder(member);
+                // processOrderItem(selectedGoods, orderQuantity, order);
+                // saveOrder(order);
+                System.out.println("구매가 완료되었습니다.");
+                break;
+            default:
+                System.out.println("유효하지 않은 옵션입니다.");
+                break;
         }
     }
 
@@ -209,22 +220,28 @@ public class RestController {
 
         System.out.println("=== 상품목록 === ");
 
+        int index = 1;
         for (GoodsDTO goods : goodsList) {
             BigDecimal amount = goods.getCurrentValue().getAmount();
             Currency currency = goods.getCurrentValue().getCurrency();
 
-            System.out.println("상품명: " + goods.getName() +
+            System.out.println(index++ + ") 상품명: " + goods.getName() +
                     ", 상품 가격: " + (amount != null ? amount + " " + currency : "가격 정보 없음") +
-                    ", 상품 개수:" + goods.getStockQuantity());
+                    ", 상품 개수: " + goods.getStockQuantity());
         }
 
     }
 
-    public MemberDTO login(String memberId,String password) {
-        return Optional.ofNullable(memberService.findByMemberId(memberId))
-                .filter(member -> password.equals(member.getPassword()))
-                .orElse(null);
+    public MemberDTO login(String memberId, String password) {
+        MemberDTO member = memberService.findByMemberId(memberId);
+        // member가 null이 아니며, member의 password도 null이 아니고, 입력된 password와 일치하는 경우
+        if (member != null && member.getPassword() != null && member.getPassword().equals(password)) {
+            return member;
+        } else {
+            return null;
+        }
     }
+
 }
 
 

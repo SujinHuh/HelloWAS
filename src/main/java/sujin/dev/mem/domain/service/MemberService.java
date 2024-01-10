@@ -1,6 +1,7 @@
 package sujin.dev.mem.domain.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import sujin.dev.mem.domain.entity.MemberEntity;
 import sujin.dev.mem.domain.model.MemberDTO;
 import sujin.dev.mem.infra.repo.DataRepository;
@@ -16,7 +17,7 @@ public interface MemberService {
     MemberDTO findByMemberId(String memberId);
     MemberEntity findMemberEntityByMemberId(String memberId);
 
-    @RequiredArgsConstructor
+    @RequiredArgsConstructor @Slf4j
     class MemberServiceImpl implements MemberService {
         private final DataRepository<MemberEntity> repository;
         @Override
@@ -28,7 +29,8 @@ public interface MemberService {
                 // 중복된 userId가 있는 경우 예외를 던집니다.
                 throw new IllegalArgumentException("이미 가입되어있는 회원입니다.");
             }
-
+            log.info("st>>>>");
+            log.info(member.getPassword());
             // 중복된 userId가 없는 경우, 새 멤버를 데이터베이스에 추가합니다.
             repository.insert(member);
         }
@@ -66,8 +68,11 @@ public interface MemberService {
                 // MemberEntity를 MemberDTO로 매핑
                 return member != null
                         ? MemberDTO.builder()
+                        .memberId(memberId)
+                        .password(member.getPassword())
                         .name(member.getName())
                         .phone(member.getPhone())
+                        .address(member.getAddress())
                         .build()
                         : null;
             } else {
